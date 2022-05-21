@@ -2,6 +2,7 @@ package com.tongji.palmdetection.component
 
 import android.util.Log
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
@@ -17,7 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.tongji.palmdetection.ImageAnalyse
+import com.tongji.palmdetection.ImageAnalyzer
 import com.tongji.palmdetection.R
 import com.tongji.palmdetection.YoloV5Ncnn
 
@@ -55,17 +56,23 @@ fun Camera(rotation: Int, yolo: YoloV5Ncnn) {
         }
     }
 
+    val textView = remember {
+        TextView(context).apply {
+            id = R.id.cost_time
+        }
+    }
+
     val imgAnalyse = remember {
         ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
     }
 
-    val imageAnalyzer = ImageAnalyse(
+    val imageAnalyzer = ImageAnalyzer(
         context,
         previewView,
+        textView,
         imageView,
-        rotation,
         yolo
     )
 
@@ -81,7 +88,7 @@ fun Camera(rotation: Int, yolo: YoloV5Ncnn) {
             val cameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
-            preview.setSurfaceProvider(previewView.createSurfaceProvider())
+            preview.setSurfaceProvider(previewView.surfaceProvider)
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
