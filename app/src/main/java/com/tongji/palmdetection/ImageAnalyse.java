@@ -86,6 +86,7 @@ public class ImageAnalyse implements ImageAnalysis.Analyzer {
             // 原图bitmap
             Bitmap imageBitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
             imageBitmap.setPixels(rgbBytes, 0, imageWidth, 0, 0, imageWidth, imageHeight);
+            System.out.println("rotation:" + rotation );
 
             // 图片适应屏幕fill_start格式的bitmap
             double scale = Math.max(
