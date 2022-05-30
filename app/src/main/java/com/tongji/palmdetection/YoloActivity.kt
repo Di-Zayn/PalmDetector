@@ -11,6 +11,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.ComposeView
+import com.tongji.palmdetection.model.GlobalModel
 
 
 class YoloActivity : AppCompatActivity() {
@@ -24,8 +25,10 @@ class YoloActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE) // 去掉标题栏
         setContentView(R.layout.camera_layout)
 
+        GlobalModel.setPath(this@YoloActivity.cacheDir)
+
         // 打开app的时候隐藏顶部状态栏
-        // 适用于30 api 
+        // 适用于30 api
         // 当前手机的sdk是29 所以不能调整
 //        val ic = window.insetsController
 //        if (ic != null) {
@@ -43,25 +46,29 @@ class YoloActivity : AppCompatActivity() {
         val cameraPreview = findViewById<PreviewView>(R.id.camera_preview)
         val canvas = findViewById<ImageView>(R.id.box_label_canvas)
         val costTimeText = findViewById<TextView>(R.id.cost_time)
+        val button = findViewById<ComposeView>(R.id.button)
 
         val imageAnalyzer = ImageAnalyzer(
             this@YoloActivity,
             cameraPreview,
             costTimeText,
             canvas,
-            yolov5ncnn
+            yolov5ncnn,
+            "register",
+            button
         )
 
-        val button = findViewById<ComposeView>(R.id.button)
         button.setContent {
             Button(onClick = {
-                println("Click")
+                finish()
             }){
                 Text(text = "Button")
             }
         }
 
         cameraProcess.startCamera(this@YoloActivity, imageAnalyzer, cameraPreview)
+
+
     }
 }
 

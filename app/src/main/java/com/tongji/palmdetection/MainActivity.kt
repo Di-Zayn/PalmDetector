@@ -32,7 +32,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         permission.launch(arrayOf(
-            Manifest.permission.CAMERA))
+            Manifest.permission.CAMERA, Manifest.permission.INTERNET,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE))
 
         setContent {
             val navController = rememberNavController()
