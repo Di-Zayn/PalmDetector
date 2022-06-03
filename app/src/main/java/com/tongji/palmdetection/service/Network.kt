@@ -2,6 +2,7 @@ package com.tongji.palmdetection.service
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import com.tongji.palmdetection.model.DetectResponse
 import com.tongji.palmdetection.model.GlobalModel
@@ -47,6 +48,7 @@ object Network {
                     if (body != null) {
                         if (body.success) {
                             GlobalModel.addNum()
+                            println("add!!!")
                         }
                     }
                 }
@@ -76,15 +78,25 @@ object Network {
             .addFormDataPart("pcy", pcy)
             .build()
 
+        println("request")
+
         userService.detect(multipartBody).enqueue(
             object : Callback<DetectResponse> {
                 override fun onResponse(call: Call<DetectResponse>, response: Response<DetectResponse>) {
                     println("response")
                     println(response)
                     val body = response.body()
-
-                    println("body")
-                    println(body)
+                    if (body != null) {
+                        if (body.match) {
+                            GlobalModel.setMatchRes("识别通过，您的是" + body.person)
+                        } else {
+                            GlobalModel.setMatchRes("不存在该用户，请注册")
+                        }
+                        GlobalModel.setWaitFlag(false)
+                    } else {
+                        GlobalModel.setMatchRes("服务器故障，请重试")
+                        GlobalModel.setWaitFlag(false)
+                    }
                 }
                 override fun onFailure(call: Call<DetectResponse>, t: Throwable) {
                     println("error")

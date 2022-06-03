@@ -9,10 +9,13 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.YuvImage;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 import android.graphics.Rect;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
@@ -27,6 +30,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import kotlin.Unit;
 
 
 public class ImageAnalyzer implements ImageAnalysis.Analyzer {
@@ -52,7 +56,7 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     private int picNum = 0;
     private boolean breakSignal = false;
     private String pattern = "detect";
-
+    private Context context;
 
     public ImageAnalyzer(
             Context context,
@@ -70,6 +74,7 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
         this.imageProcess = new ImageProcess();
         this.pattern = pattern;
         this.button = button;
+        this.context = context;
     }
 
     private Bitmap convertImageProxyToBitmap(ImageProxy image) {
@@ -179,25 +184,39 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
                     hitCount[1] = false;
                     credibility = false;
 
-                    if (pattern == "register") {
+                    System.out.println("ok to upload" + pattern);
 
-                        Network.INSTANCE.register("DZY", "Left", String.valueOf((int)Math.floor(dfgx1)),
+                    if (pattern.equals("register")) {
+
+                        Network.INSTANCE.register(GlobalModel.INSTANCE.getUserName(),
+                                GlobalModel.INSTANCE.getLorR(), String.valueOf((int)Math.floor(dfgx1)),
                                 String.valueOf((int)Math.floor(dfgy1)), String.valueOf((int)Math.floor(dfgx2)),
                                 String.valueOf((int)Math.floor(dfgy2)), String.valueOf((int)Math.floor(pcx)),
                                 String.valueOf((int)Math.floor(pcy)), fullImageBitmap);
 
                         if (GlobalModel.INSTANCE.isRegister()) {
                             GlobalModel.INSTANCE.resetNum();
+                            GlobalModel.INSTANCE.convertRegisteLeft();
                             breakSignal = true;
+                            if (GlobalModel.INSTANCE.getRegisteLeft()) {
+                                Looper.prepare();
+                                Toast.makeText(context, "左手注册完毕，请返回注册右手", Toast.LENGTH_LONG).show();
+                                Looper.loop();
+                            } else {
+                                Looper.prepare();
+                                Toast.makeText(context, "右手注册完毕", Toast.LENGTH_LONG).show();
+                                Looper.loop();
+                            }
                         }
                     }
-                    else if (pattern == "detect") {
+                    else if (pattern.equals("detect")) {
                         breakSignal = true;
+                        System.out.println("ok to upload" + breakSignal);
+
                         Network.INSTANCE.detect(String.valueOf((int)Math.floor(dfgx1)),
                                 String.valueOf((int)Math.floor(dfgy1)), String.valueOf((int)Math.floor(dfgx2)),
                                 String.valueOf((int)Math.floor(dfgy2)), String.valueOf((int)Math.floor(pcx)),
                                 String.valueOf((int)Math.floor(pcy)), fullImageBitmap);
-                        Log.i("breakSignal", "can be uploaded");
                     }
                 }
 
@@ -206,13 +225,20 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
                 hitCount[0] = credibility;
             }
 
+            if(!GlobalModel.INSTANCE.isWait()) {
+                Looper.prepare();
+                Toast.makeText(context, GlobalModel.INSTANCE.getMatchRes(), Toast.LENGTH_LONG).show();
+                GlobalModel.INSTANCE.setWaitFlag(true);
+                Looper.loop();
+            }
+
             image.close();
             emitter.onNext(new Result(costTime, resultBitmap));
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe( (Result result) -> {
-                    boxLabelCanvas.setImageBitmap(result.bitmap);
                     costTimeText.setText(Long.toString(result.costTime) + "ms");
+                    boxLabelCanvas.setImageBitmap(result.bitmap);
                 });
     }
 

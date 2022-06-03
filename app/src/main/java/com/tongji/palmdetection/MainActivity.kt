@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tongji.palmdetection.view.HomeScreen
+import com.tongji.palmdetection.view.RegisterScreen
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,9 +27,9 @@ class MainActivity : AppCompatActivity() {
         val permission =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
                 // true: 用户同意   false：用户不同意 or 用户不处理
-                for(i in it){
-                    if(i.value) Toast.makeText(this, "SUCCESSFUL", Toast.LENGTH_LONG).show()
-                }
+//                for(i in it){
+//                    if(i.value) Toast.makeText(this, "SUCCESSFUL", Toast.LENGTH_LONG).show()
+//                }
             }
 
         permission.launch(arrayOf(
@@ -42,7 +43,10 @@ class MainActivity : AppCompatActivity() {
                 route = "root"
             ) {
                 composable("home") {
-                    HomeScreen()
+                    HomeScreen { navController.navigate("register") }
+                }
+                composable("register") {
+                    RegisterScreen()
                 }
             }
         }

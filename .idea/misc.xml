@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/PalmDetection-Yolov5n-Android/app/src/main/res/drawable/home_background.xml" value="0.1" />
+        <entry key="..\:/PalmDetection-Yolov5n-Android/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/PalmDetection-Yolov5n-Android/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/PalmDetection-Yolov5n-Android/app/src/main/res/layout/camera_layout.xml" value="0.129981884057971" />
         <entry key="..\:/PalmDetection-Yolov5n-Android/app/src/main/res/layout/cemare_layout.xml" value="0.1" />
